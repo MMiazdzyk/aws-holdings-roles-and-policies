@@ -1,0 +1,38 @@
+---
+Description: Holdings role with access policies for CloudWatch and DynamoDB
+Resources:
+  HoldingsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ecs-tasks.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: "/"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+        - dynamo
+        - cloud watch
+      RoleName: "HoldingsRole"
+
+  HoldingsCloudWatchPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+              - logs:DescribeLogStreams
+            Resource: arn:aws:logs:*:*:*
+      ManagedPolicyName: dev_CloudWatch_logs
+      Roles:
+        - HoldingsRole
